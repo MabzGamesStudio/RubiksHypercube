@@ -23,6 +23,9 @@ public class HypercubeTurner : MonoBehaviour
 
 	private MeshRenderer[] cubiesMeshRenderers;
 
+	private Transform[] hypercubeTurnStickerParents;
+	private Transform[] hypercubeTurnStickerChildren;
+
 	public enum TurnAxis
 	{
 		FaceTop,
@@ -54,9 +57,7 @@ public class HypercubeTurner : MonoBehaviour
 	// 6: EdgeTopLeft, 7: EdgeFrontRight, 8: EdgeFrontLeft, 9: CornerTopFrontRight,
 	// 10: CornerTopFrontLeft, 11: CornerTopBackLeft, 12: CornerTopBackRight
 
-
 	private GameObject[] turnAxis;
-	private List<int[]> turns;
 
 	private int[] cubeColors;
 
@@ -71,9 +72,14 @@ public class HypercubeTurner : MonoBehaviour
 	private float currentTurnDegrees;
 	private TurnType currentTurnType;
 
-	private float turnTime = .1f;
+	private float turnTime = .5f;
+	private float switchTime = .2f;
 
-	private float fadeStickerTime = .5f;
+	private static float hyperfaceDistance = 8f;
+
+	private bool showTurn = true;
+
+	private int scrambleMoves = 500;
 
 	public enum TurnType
 	{
@@ -112,13 +118,13 @@ public class HypercubeTurner : MonoBehaviour
 	private Vector3[] cubePositions = new Vector3[]
 	{
 		new Vector3(0, 0, 0),
-		new Vector3(0, 0, -6),
-		new Vector3(0, 0, 6),
-		new Vector3(0, 6, 0),
-		new Vector3(0, -6, 0),
-		new Vector3(6, 0, 0),
-		new Vector3(-6, 0, 0),
-		new Vector3(12, 12, 12)
+		new Vector3(0, 0, -hyperfaceDistance),
+		new Vector3(0, 0, hyperfaceDistance),
+		new Vector3(0, hyperfaceDistance, 0),
+		new Vector3(0, -hyperfaceDistance, 0),
+		new Vector3(hyperfaceDistance, 0, 0),
+		new Vector3(-hyperfaceDistance, 0, 0),
+		new Vector3(2 * hyperfaceDistance, 2 * hyperfaceDistance, 2 * hyperfaceDistance)
 	};
 
 	private int[] cubiesMapping = new int[]
@@ -178,16 +184,34 @@ public class HypercubeTurner : MonoBehaviour
 	{
 		if (isTurning)
 		{
+			float percent;
 			turnTimer += Time.deltaTime;
-			float percent = turnTimer / turnTime;
+
+			if (showTurn && currentTurnAxis != TurnAxis.None)
+			{
+				percent = turnTimer / turnTime;
+			}
+			else
+			{
+				percent = turnTimer / switchTime;
+			}
 
 			if (percent <= 1f)
 			{
-				if (currentTurnAxis != TurnAxis.None)
+				if (currentTurnAxis != TurnAxis.None && showTurn)
 				{
 					turnAxis[(int)currentTurnAxis].transform.localEulerAngles = new Vector3(0, currentTurnDegrees * percent);
 				}
-				cubiesMeshRenderers[currentTurnSticker - 1].material = colorsSelected[cubeColors[currentTurnSticker - 1]];
+				if (showingColors)
+				{
+					cubiesMeshRenderers[currentTurnSticker - 1].material = colorsSelected[cubeColors[currentTurnSticker - 1]];
+				}
+				else
+				{
+					cubiesMeshRenderers[currentTurnSticker - 1].material = colorsSelected[8];
+				}
+				CheckColorCentralizerTurn(true);
+				CheckColorFaceTurn(true);
 			}
 			else
 			{
@@ -196,8 +220,17 @@ public class HypercubeTurner : MonoBehaviour
 					turnAxis[(int)currentTurnAxis].transform.localEulerAngles = Vector3.zero;
 					UpdateStickersParents(turnAxis[(int)currentTurnAxis], true);
 				}
+				if (showingColors)
+				{
+					cubiesMeshRenderers[currentTurnSticker - 1].material = colors[cubeColors[currentTurnSticker - 1]];
+				}
+				else
+				{
+					cubiesMeshRenderers[currentTurnSticker - 1].material = colors[8];
+				}
+				CheckColorCentralizerTurn(false);
+				CheckColorFaceTurn(false);
 				UpdateStickers(currentTurnSticker, currentTurnType);
-				cubiesMeshRenderers[currentTurnSticker - 1].material = colors[cubeColors[currentTurnSticker - 1]];
 				isTurning = false;
 			}
 
@@ -239,10 +272,24 @@ public class HypercubeTurner : MonoBehaviour
 		}
 	}
 
-	// TODO
+	public bool ToggleShowTurn()
+	{
+		showTurn = !showTurn;
+		return showTurn;
+	}
+
 	public string Scramble()
 	{
-		return "";
+
+		string scrambleText = "";
+		for (int i = 0; i < scrambleMoves; i++)
+		{
+			int randomNumber = UnityEngine.Random.Range(1, 216);
+			scrambleText += randomNumber.ToString() + ", ";
+			UpdateStickers(randomNumber, TurnType.Clockwise);
+		}
+
+		return scrambleText;
 	}
 
 	public void SetStartState()
@@ -310,7 +357,7 @@ public class HypercubeTurner : MonoBehaviour
 			// Reverses the direction of turn if opposite positive y-axis
 			degrees *= ReverseTurnDirection(stickerIndex) ? -1 : 1;
 
-			if (stickerTurnAxis != TurnAxis.None)
+			if (stickerTurnAxis != TurnAxis.None && showTurn)
 			{
 				UpdateStickersParents(turnAxis[(int)stickerTurnAxis], true);
 			}
@@ -388,6 +435,21 @@ public class HypercubeTurner : MonoBehaviour
 
 		int indexCounter = 0;
 
+		hypercubeTurnStickerParents = new Transform[81];
+		hypercubeTurnStickerChildren = new Transform[81];
+		int transformParentsIndex = 0;
+		List<int> transformParentStickerIndicies = new List<int>()
+		{
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+			34, 35, 36, 43, 44, 45, 52, 53, 54,
+			55, 56, 57, 64, 65, 66, 73, 74, 75,
+			82, 83, 84, 85, 86, 87, 88, 89, 90,
+			127, 128, 129, 130, 131, 132, 133, 134, 135,
+			136, 139, 142, 145, 148, 151, 154, 157, 160,
+			165, 168, 171, 174, 177, 180, 183, 186, 189
+
+		};
+
 		for (int i = 0; i < 8; i++)
 		{
 			GameObject cube = cubes[i];
@@ -401,6 +463,14 @@ public class HypercubeTurner : MonoBehaviour
 					{
 						cubies[cubiesMapping[indexCounter]] = row.transform.Find("Cube" + l).gameObject;
 						indexCounter++;
+
+
+						if (transformParentStickerIndicies.Contains(1 + cubiesMapping[indexCounter - 1]))
+						{
+							hypercubeTurnStickerParents[transformParentsIndex] = row.transform;
+							hypercubeTurnStickerChildren[transformParentsIndex] = cubies[cubiesMapping[indexCounter - 1]].transform;
+							transformParentsIndex++;
+						}
 					}
 				}
 			}
@@ -420,29 +490,38 @@ public class HypercubeTurner : MonoBehaviour
 
 	private StickerType GetStickerTypeFromIndex(int index)
 	{
-		if (index % 27 == 13)
+		if (index % 27 == 14)
 		{
 			return StickerType.Center;
 		}
 		else if (
-			index % 27 == 4 || index % 27 == 12 || index % 27 == 16 ||
-			index % 27 == 10 || index % 14 == 22 || index % 22 == 22)
+			index % 27 == 5 || index % 27 == 11 || index % 27 == 13 ||
+			index % 27 == 15 || index % 27 == 17 || index % 27 == 23)
 		{
 			return StickerType.Middle;
 		}
 		else if (
-			index % 27 == 0 || index % 27 == 6 || index % 27 == 8 || index % 27 == 2 ||
-			index % 27 == 18 || index % 27 == 24 || index % 27 == 26 || index % 27 == 20)
+			index % 27 == 1 || index % 27 == 3 || index % 27 == 7 || index % 27 == 9 ||
+			index % 27 == 19 || index % 27 == 21 || index % 27 == 25 || index % 27 == 0)
 		{
 			return StickerType.Corner;
 		}
 		return StickerType.Edge;
 	}
 
-	// TODO
 	private void UpdateStickersParents(GameObject axis, bool toAxis)
 	{
-
+		for (int i = 0; i < hypercubeTurnStickerParents.Length; i++)
+		{
+			if (toAxis)
+			{
+				hypercubeTurnStickerChildren[i].parent = axis.transform;
+			}
+			else
+			{
+				hypercubeTurnStickerChildren[i].parent = hypercubeTurnStickerParents[i];
+			}
+		}
 	}
 
 	private void UpdateStickers(int stickerIndex, TurnType turnType)
@@ -472,6 +551,77 @@ public class HypercubeTurner : MonoBehaviour
 			if (showingColors)
 			{
 				cubiesMeshRenderers[cycles[i, 0] - 1].material = colors[cubeColors[cycles[i, 0] - 1]];
+			}
+		}
+	}
+
+	private void CheckColorFaceTurn(bool highlight)
+	{
+		int relativePiece = currentTurnSticker % 27;
+		int cubeFace = (currentTurnSticker - 1) / 27;
+
+		List<int> faceIndicies = new List<int>() { 5, 11, 13, 15, 17, 23 };
+		int[,] facePieces = new int[,]
+		{
+			{ 1, 2, 3, 4, 5, 6, 7, 8, 9},
+			{ 1, 2, 3, 10, 11, 12, 19, 20, 21},
+			{ 1, 4, 7, 10, 13, 16, 19, 22, 25},
+			{ 3, 6, 9, 12, 15, 18, 21, 24, 27},
+			{ 7, 8, 9, 16, 17, 18, 25, 26, 27},
+			{ 19, 20, 21, 22, 23, 24, 25, 26, 27},
+		};
+
+		if (faceIndicies.Contains(relativePiece))
+		{
+			for (int i = 0; i < 9; i++)
+			{
+				int highlightSticker = 27 * cubeFace + facePieces[faceIndicies.IndexOf(relativePiece), i] - 1;
+				if (highlight && showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colorsSelected[cubeColors[highlightSticker]];
+				}
+				else if (highlight && !showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colorsSelected[8];
+				}
+				else if (!highlight && showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colors[cubeColors[highlightSticker]];
+				}
+				else if (!highlight && !showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colors[8];
+				}
+			}
+		}
+	}
+
+	private void CheckColorCentralizerTurn(bool highlight)
+	{
+		int relativePiece = currentTurnSticker % 27;
+		int cubeFace = (currentTurnSticker - 1) / 27;
+
+		if (relativePiece == 14)
+		{
+			for (int i = 0; i < 27; i++)
+			{
+				int highlightSticker = 27 * cubeFace + i;
+				if (highlight && showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colorsSelected[cubeColors[highlightSticker]];
+				}
+				else if (highlight && !showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colorsSelected[8];
+				}
+				else if (!highlight && showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colors[cubeColors[highlightSticker]];
+				}
+				else if (!highlight && !showingColors)
+				{
+					cubiesMeshRenderers[highlightSticker].material = colors[8];
+				}
 			}
 		}
 	}
@@ -530,20 +680,8 @@ public class HypercubeTurner : MonoBehaviour
 				return TurnAxis.CornerTopBackLeft;
 			case 26:
 				return TurnAxis.EdgeTopBack;
-			case 27:
+			case 0:
 				return TurnAxis.CornerTopBackRight;
-			case 44:
-				return TurnAxis.FaceFront;
-			case 65:
-				return TurnAxis.FaceFront;
-			case 86:
-				return TurnAxis.FaceTop;
-			case 131:
-				return TurnAxis.FaceTop;
-			case 148:
-				return TurnAxis.FaceRight;
-			case 177:
-				return TurnAxis.FaceRight;
 		}
 		return TurnAxis.None;
 	}
@@ -578,12 +716,6 @@ public class HypercubeTurner : MonoBehaviour
 				return true;
 			case 18:
 				return true;
-			case 65:
-				return true;
-			case 86:
-				return true;
-			case 148:
-				return true;
 		}
 		return false;
 	}
@@ -612,12 +744,6 @@ public class HypercubeTurner : MonoBehaviour
 		{
 			turnAxis[i] = turns[i].Find("RotationParent").gameObject;
 		}
-	}
-
-	public void Test(int i)
-	{
-		Debug.Log(i);
-		cubiesMeshRenderers[i - 1].material = colors[0];
 	}
 }
 
@@ -658,9 +784,9 @@ public class HypercubeTurnerEditor : Editor
 		{
 			hypercube.Scramble();
 		}
-		if (GUILayout.Button("Test"))
+		if (GUILayout.Button("Toggle Show Turn"))
 		{
-			hypercube.Test(stickerIndexMove);
+			hypercube.ToggleShowTurn();
 		}
 	}
 }
