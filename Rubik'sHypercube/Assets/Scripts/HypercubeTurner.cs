@@ -81,6 +81,11 @@ public class HypercubeTurner : MonoBehaviour
 
 	private int scrambleMoves = 500;
 
+	private float hypercubeScale = 0.04f;
+	private Vector3 hypercubePosition = new Vector3(0f, 1.1f, 1.2f);
+
+	private float perspectiveOffset = 1f;
+
 	public enum TurnType
 	{
 		Clockwise,
@@ -103,6 +108,13 @@ public class HypercubeTurner : MonoBehaviour
 	 * 
 	 */
 
+	public enum Perspective
+	{
+		Top,
+		Normal,
+		Bottom
+	};
+
 	private Vector3[] cubesEulerAngles = new Vector3[]
 	{
 		new Vector3(0, 0, 0),
@@ -124,7 +136,7 @@ public class HypercubeTurner : MonoBehaviour
 		new Vector3(0, -hyperfaceDistance, 0),
 		new Vector3(hyperfaceDistance, 0, 0),
 		new Vector3(-hyperfaceDistance, 0, 0),
-		new Vector3(2 * hyperfaceDistance, 2 * hyperfaceDistance, 2 * hyperfaceDistance)
+		new Vector3(3 * hyperfaceDistance, 0, 0)
 	};
 
 	private int[] cubiesMapping = new int[]
@@ -234,6 +246,34 @@ public class HypercubeTurner : MonoBehaviour
 				isTurning = false;
 			}
 
+		}
+	}
+
+	public void ChangePerspective(Perspective perspective)
+	{
+		switch (perspective)
+		{
+			case Perspective.Top:
+				transform.parent.localPosition =
+					new Vector3(
+						hypercubePosition.x,
+						hypercubePosition.y - perspectiveOffset,
+						hypercubePosition.z);
+				break;
+			case Perspective.Normal:
+				transform.parent.localPosition =
+					new Vector3(
+						hypercubePosition.x,
+						hypercubePosition.y,
+						hypercubePosition.z);
+				break;
+			case Perspective.Bottom:
+				transform.parent.localPosition =
+					new Vector3(
+						hypercubePosition.x,
+						hypercubePosition.y + perspectiveOffset,
+						hypercubePosition.z);
+				break;
 		}
 	}
 
@@ -425,6 +465,8 @@ public class HypercubeTurner : MonoBehaviour
 			}
 		}
 
+		transform.localScale = new Vector3(hypercubeScale, hypercubeScale, hypercubeScale);
+		transform.parent.localPosition = hypercubePosition;
 	}
 
 	private void AssignCubies()
@@ -462,6 +504,7 @@ public class HypercubeTurner : MonoBehaviour
 					for (int l = 1; l <= 3; l++)
 					{
 						cubies[cubiesMapping[indexCounter]] = row.transform.Find("Cube" + l).gameObject;
+						cubies[cubiesMapping[indexCounter]].name = "Sticker" + (1 + cubiesMapping[indexCounter]);
 						indexCounter++;
 
 
@@ -725,6 +768,10 @@ public class HypercubeTurner : MonoBehaviour
 		Transform[] turns = new Transform[13];
 		turnAxis = new GameObject[13];
 		turnAxisPrefab = Instantiate(turnAxisPrefab);
+		turnAxisPrefab.transform.parent = transform.Find("MainSection");
+		turnAxisPrefab.transform.localPosition = Vector3.zero;
+		turnAxisPrefab.name = "TurnAxis";
+
 
 		turns[0] = turnAxisPrefab.transform.Find("FaceTop");
 		turns[1] = turnAxisPrefab.transform.Find("FaceRight");
@@ -748,7 +795,7 @@ public class HypercubeTurner : MonoBehaviour
 }
 
 
-
+/*
 [CustomEditor(typeof(HypercubeTurner))]
 public class HypercubeTurnerEditor : Editor
 {
@@ -790,3 +837,4 @@ public class HypercubeTurnerEditor : Editor
 		}
 	}
 }
+*/

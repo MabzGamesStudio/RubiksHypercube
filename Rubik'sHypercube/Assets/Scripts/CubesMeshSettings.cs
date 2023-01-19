@@ -7,7 +7,7 @@ public static class CubesMeshSettings
 
 	public static float verticalStretch = 1.5f;
 	public static float horizontalStretch = 1.5f;
-	public static float spacing = 1;
+	public static float spacing = 0.5f;
 
 
 }
