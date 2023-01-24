@@ -22,7 +22,7 @@ public class NearCornerMesh : MonoBehaviour
 
 		boxCollider = GetComponent<BoxCollider>();
 		boxCollider.center = new Vector3(1 + spacing, verticalStretch / 2, 1 + spacing);
-		boxCollider.size = new Vector3(0.5f * horizontalStretch, verticalStretch, 0.5f * horizontalStretch);
+		boxCollider.size = new Vector3(0.5f * horizontalStretch + spacing, verticalStretch + spacing, 0.5f * horizontalStretch + spacing);
 
 		verticies = new Vector3[]
 		{

@@ -22,7 +22,7 @@ public class FarCornerMesh : MonoBehaviour
 
 		boxCollider = GetComponent<BoxCollider>();
 		boxCollider.center = new Vector3(spacing + 1.5f * horizontalStretch, 2 * spacing + verticalStretch * 2.5f, spacing + 1.5f * horizontalStretch);
-		boxCollider.size = new Vector3(1.5f * horizontalStretch, verticalStretch, 1.5f * horizontalStretch);
+		boxCollider.size = new Vector3(1.5f * horizontalStretch + spacing, verticalStretch + spacing, 1.5f * horizontalStretch + spacing);
 
 		verticies = new Vector3[]
 		{

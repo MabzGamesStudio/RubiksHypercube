@@ -8,6 +8,8 @@ public class ControllerInteraction : MonoBehaviour
 
 	private InputDevice controllerDevice;
 
+	public ScrambleText scrambleText;
+
 	public RayDetector rayDetector;
 
 	public Transform controllerPosition;
@@ -19,7 +21,12 @@ public class ControllerInteraction : MonoBehaviour
 
 	public CubeButton[] buttons;
 
+	public CubeTimer cubeTimer;
+	public SolveText solveText;
+
 	public bool rightController;
+
+	private bool cubeMoved;
 
 	private bool triggerReset = true;
 	private bool gripReset = true;
@@ -79,14 +86,31 @@ public class ControllerInteraction : MonoBehaviour
 					case 1:
 						hypercubeTurner.SetStartState();
 						buttons[0].HighlightButton();
+						cubeTimer.HideTimer();
+						scrambleText.HideText();
+						solveText.HideMoves();
+						solveText.ClearMoves();
 						break;
 					case 2:
-						hypercubeTurner.Scramble();
+						scrambleText.SetText(hypercubeTurner.Scramble());
+						scrambleText.HideText();
 						buttons[1].HighlightButton();
+						cubeTimer.StartTimer();
+						solveText.HideMoves();
+						solveText.ClearMoves();
+						cubeMoved = false;
 						break;
 					case 3:
 						hypercubeTurner.ToggleColorShow();
 						buttons[2].HighlightButton();
+						if (hypercubeTurner.showingColors)
+						{
+							cubeTimer.DisableBlindMode();
+						}
+						else if (!cubeMoved)
+						{
+							cubeTimer.EnableBlindMode();
+						}
 						break;
 					case 4:
 						hypercubeTurner.ToggleShowTurn();
@@ -110,6 +134,7 @@ public class ControllerInteraction : MonoBehaviour
 			if (stickerClicked > 0)
 			{
 				hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.Clockwise);
+				cubeMoved = true;
 			}
 		}
 
@@ -127,6 +152,7 @@ public class ControllerInteraction : MonoBehaviour
 			if (stickerClicked > 0)
 			{
 				hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.CounterClockwise);
+				cubeMoved = true;
 			}
 		}
 
@@ -144,6 +170,7 @@ public class ControllerInteraction : MonoBehaviour
 			if (stickerClicked > 0)
 			{
 				hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.HalfTurn);
+				cubeMoved = true;
 			}
 		}
 
@@ -211,4 +238,5 @@ public class ControllerInteraction : MonoBehaviour
 
 
 	}
+
 }

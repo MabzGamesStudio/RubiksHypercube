@@ -32,7 +32,7 @@ public class CubeButton : MonoBehaviour
 	{
 		"Solve Cube", "Solve Cube",
 		"Scramble", "Scramble",
-		"Show Colors", "Hide Colors",
+		"Hide Colors", "Show Colors",
 		"Show Turns", "Hide Turns"
 	};
 
@@ -41,6 +41,19 @@ public class CubeButton : MonoBehaviour
 		timerOn = true;
 		timerValue = .2f;
 		meshRenderer.material = highlightColor;
+	}
+
+	public void SetButtonToggle(bool isOn)
+	{
+		toggleSelection = isOn;
+		if (isOn)
+		{
+			textMesh.text = buttonStrings[2 * (int)buttonType];
+		}
+		else
+		{
+			textMesh.text = buttonStrings[2 * (int)buttonType + 1];
+		}
 	}
 
 	// Update is called once per frame

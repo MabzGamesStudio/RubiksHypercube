@@ -19,10 +19,11 @@ public class NearCenterMesh : MonoBehaviour
 
 		float verticalStretch = CubesMeshSettings.verticalStretch;
 		float horizontalStretch = CubesMeshSettings.horizontalStretch;
+		float spacing = CubesMeshSettings.spacing;
 
 		boxCollider = GetComponent<BoxCollider>();
 		boxCollider.center = new Vector3(0, verticalStretch / 2, 0);
-		boxCollider.size = new Vector3(0.5f * horizontalStretch, verticalStretch, 0.5f * horizontalStretch);
+		boxCollider.size = new Vector3(0.5f * horizontalStretch + spacing, verticalStretch + spacing, 0.5f * horizontalStretch + spacing);
 
 		verticies = new Vector3[]
 		{

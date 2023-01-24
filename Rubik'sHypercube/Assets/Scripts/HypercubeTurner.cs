@@ -21,10 +21,22 @@ public class HypercubeTurner : MonoBehaviour
 
 	private GameObject[] cubies;
 
+
+
 	private MeshRenderer[] cubiesMeshRenderers;
 
 	private Transform[] hypercubeTurnStickerParents;
 	private Transform[] hypercubeTurnStickerChildren;
+
+	public CubeTimer timer;
+
+	public ConfettiScript confetti;
+
+	public ScrambleText scrambleText;
+
+	public SolveText solveText;
+
+	public CubeButton showColorsButton;
 
 	public enum TurnAxis
 	{
@@ -63,7 +75,7 @@ public class HypercubeTurner : MonoBehaviour
 
 	private GameObject mainSection;
 
-	private bool showingColors = true;
+	public bool showingColors = true;
 
 	private bool isTurning;
 	private float turnTimer = 0f;
@@ -79,12 +91,18 @@ public class HypercubeTurner : MonoBehaviour
 
 	private bool showTurn = true;
 
-	private int scrambleMoves = 500;
+	private int scrambleMoves = 100;
 
 	private float hypercubeScale = 0.04f;
 	private Vector3 hypercubePosition = new Vector3(0f, 1.1f, 1.2f);
 
 	private float perspectiveOffset = 1f;
+
+	private bool solveAnimation;
+	private float solveAnimationTime;
+
+	private bool cubeScrambled;
+
 
 	public enum TurnType
 	{
@@ -189,12 +207,21 @@ public class HypercubeTurner : MonoBehaviour
 		SetupHypercubeStructure();
 		AssignCubies();
 		SetupTurnAxis();
+		showColorsButton.SetButtonToggle(true);
 	}
 
 	// Update is called once per frame
 	private void Update()
 	{
-		if (isTurning)
+		if (solveAnimation)
+		{
+			solveAnimationTime -= Time.deltaTime;
+			if (solveAnimationTime <= 0)
+			{
+				solveAnimation = false;
+			}
+		}
+		if (isTurning && !solveAnimation)
 		{
 			float percent;
 			turnTimer += Time.deltaTime;
@@ -243,6 +270,15 @@ public class HypercubeTurner : MonoBehaviour
 				CheckColorCentralizerTurn(false);
 				CheckColorFaceTurn(false);
 				UpdateStickers(currentTurnSticker, currentTurnType);
+				if (IsSolved())
+				{
+					solveAnimation = true;
+					solveAnimationTime = 5.5f;
+					if (!showingColors)
+					{
+						ToggleColorShow();
+					}
+				}
 				isTurning = false;
 			}
 
@@ -279,6 +315,10 @@ public class HypercubeTurner : MonoBehaviour
 
 	public bool IsSolved()
 	{
+		if (!cubeScrambled)
+		{
+			return false;
+		}
 		for (int i = 0; i < 8; i++)
 		{
 			int cubeColor = cubeColors[i * 27];
@@ -290,6 +330,12 @@ public class HypercubeTurner : MonoBehaviour
 				}
 			}
 		}
+		timer.StopTimer();
+		confetti.PartyTime();
+		cubeScrambled = false;
+		scrambleText.ShowText();
+		solveText.ShowMoves();
+		showColorsButton.SetButtonToggle(true);
 		return true;
 	}
 
@@ -320,15 +366,15 @@ public class HypercubeTurner : MonoBehaviour
 
 	public string Scramble()
 	{
-
+		SetStartState();
 		string scrambleText = "";
 		for (int i = 0; i < scrambleMoves; i++)
 		{
 			int randomNumber = UnityEngine.Random.Range(1, 216);
-			scrambleText += randomNumber.ToString() + ", ";
+			scrambleText += randomNumber.ToString() + " ";
 			UpdateStickers(randomNumber, TurnType.Clockwise);
 		}
-
+		cubeScrambled = true;
 		return scrambleText;
 	}
 
@@ -338,10 +384,18 @@ public class HypercubeTurner : MonoBehaviour
 		{
 			for (int j = 0; j < 27; j++)
 			{
-				cubiesMeshRenderers[27 * i + j].material = colors[i];
+				if (showingColors)
+				{
+					cubiesMeshRenderers[27 * i + j].material = colors[i];
+				}
+				else
+				{
+					cubiesMeshRenderers[27 * i + j].material = colors[8];
+				}
 				cubeColors[27 * i + j] = i;
 			}
 		}
+		cubeScrambled = false;
 	}
 
 	public void Turn(int stickerIndex, TurnType turnType)
@@ -407,6 +461,41 @@ public class HypercubeTurner : MonoBehaviour
 			currentTurnDegrees = degrees;
 			currentTurnType = turnType;
 			isTurning = true;
+
+			if (stickerType == StickerType.Center || stickerType == StickerType.Edge)
+			{
+				solveText.AddMove(stickerIndex);
+			}
+			else if (stickerType == StickerType.Corner)
+			{
+				if (turnType == TurnType.Clockwise)
+				{
+					solveText.AddMove(stickerIndex);
+				}
+				else if (turnType == TurnType.CounterClockwise)
+				{
+					solveText.AddMove(stickerIndex);
+					solveText.AddMove(stickerIndex);
+				}
+			}
+			else if (stickerType == StickerType.Middle)
+			{
+				if (turnType == TurnType.Clockwise)
+				{
+					solveText.AddMove(stickerIndex);
+				}
+				else if (turnType == TurnType.HalfTurn)
+				{
+					solveText.AddMove(stickerIndex);
+					solveText.AddMove(stickerIndex);
+				}
+				else if (turnType == TurnType.CounterClockwise)
+				{
+					solveText.AddMove(stickerIndex);
+					solveText.AddMove(stickerIndex);
+					solveText.AddMove(stickerIndex);
+				}
+			}
 		}
 	}
 

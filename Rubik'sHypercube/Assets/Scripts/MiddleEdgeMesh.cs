@@ -22,7 +22,7 @@ public class MiddleEdgeMesh : MonoBehaviour
 
 		boxCollider = GetComponent<BoxCollider>();
 		boxCollider.center = new Vector3(horizontalStretch + spacing, spacing + verticalStretch * 1.5f, 0);
-		boxCollider.size = new Vector3(horizontalStretch, verticalStretch, horizontalStretch);
+		boxCollider.size = new Vector3(horizontalStretch + spacing, verticalStretch + spacing, horizontalStretch + spacing);
 
 		verticies = new Vector3[]
 		{
