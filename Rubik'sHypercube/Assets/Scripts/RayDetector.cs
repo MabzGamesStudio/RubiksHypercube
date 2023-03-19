@@ -56,6 +56,10 @@ public class RayDetector : MonoBehaviour
 	/// 2: for scramble cube button
 	/// 3: for toggle color show button
 	/// 4: for toggle show turn button
+	/// 5: for switch to 4D cube scene
+	/// 6: for switch to credits scene
+	/// 7: for switch back from credits scene
+	/// 8: for switch to 3D cube scene
 	/// 0: non-button hit
 	/// -1: no game object hit
 	/// </returns>
@@ -82,6 +86,14 @@ public class RayDetector : MonoBehaviour
 					return 3;
 				case "TurnsCube":
 					return 4;
+				case "4DCube":
+					return 5;
+				case "CreditsCube":
+					return 6;
+				case "CreditsBackCube":
+					return 7;
+				case "3DCube":
+					return 8;
 			}
 
 			// If non game object hit return 0

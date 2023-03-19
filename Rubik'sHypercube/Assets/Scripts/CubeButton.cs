@@ -62,7 +62,11 @@ public class CubeButton : MonoBehaviour
 		Solve,
 		Scramble,
 		ToggleColors,
-		ShowTurning
+		ShowTurning,
+		To4DCube,
+		Credits,
+		CreditsBack,
+		To3DCube
 	};
 
 	/// <summary>
@@ -73,7 +77,12 @@ public class CubeButton : MonoBehaviour
 		"Solve Cube", "Solve Cube",
 		"Scramble", "Scramble",
 		"Hide Colors", "Show Colors",
-		"Show Turns", "Hide Turns"
+		"Show Turns", "Hide Turns",
+		"4D Cube", "4D Cube",
+		"Credits", "Credits",
+		"Back", "Back",
+		"3D Cube", "3DCube"
+
 	};
 
 	/// <summary>

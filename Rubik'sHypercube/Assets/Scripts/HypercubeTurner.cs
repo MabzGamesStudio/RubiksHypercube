@@ -1014,7 +1014,7 @@ public class HypercubeTurner : MonoBehaviour
 	private void UpdateStickersParents(GameObject axis, bool toAxis)
 	{
 
-		// Iterates over each sticker in list of turn animatino stickers
+		// Iterates over each sticker in list of turn animation stickers
 		for (int i = 0; i < hypercubeTurnStickerParents.Length; i++)
 		{
 

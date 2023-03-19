@@ -30,6 +30,17 @@ public class ControllerInteraction : MonoBehaviour
 	public HypercubeTurner hypercubeTurner;
 
 	/// <summary>
+	/// Script for the movement of the hypercube turning and display
+	/// </summary>
+	public CubeTurner cubeTurner;
+
+	/// <summary>
+	/// Whether this script is using the hypercube turner instead of
+	/// the cube turner
+	/// </summary>
+	public bool usingHypercubeTurner;
+
+	/// <summary>
 	/// Scripts of the buttons: solve cube, scramble cube, toggle color show,
 	/// toggle show turns, toggle cube type, and credits scene
 	/// </summary>
@@ -113,7 +124,7 @@ public class ControllerInteraction : MonoBehaviour
 	/// <summary>
 	/// Sensitivity of the rotation of the hypercube
 	/// </summary>
-	private static float spinSensitivity = 100f;
+	private static float spinSensitivity = 150f;
 
 	/// <summary>
 	/// Initializes the controller device to the left or right
@@ -182,10 +193,19 @@ public class ControllerInteraction : MonoBehaviour
 			// Controller aimed at sticker if value is above 0
 			if (stickerClicked > 0)
 			{
+				if (usingHypercubeTurner)
+				{
 
-				// Gets the center sticker of the hyperface
-				int moveHyperfaceSticker = (stickerClicked - 1) / 27 * 27 + 14;
-				hypercubeTurner.Turn(moveHyperfaceSticker, HypercubeTurner.TurnType.None);
+					// Gets the center sticker of the hyperface
+					int moveHyperfaceSticker = (stickerClicked - 1) / 27 * 27 + 14;
+					hypercubeTurner.Turn(moveHyperfaceSticker, HypercubeTurner.TurnType.None);
+				}
+				else
+				{
+
+					// Turns the center sticker of the hyperface
+					cubeTurner.Turn(stickerClicked, CubeTurner.TurnType.FaceCentralizer);
+				}
 			}
 
 			// Sends button response if any buttons clicked
@@ -201,7 +221,14 @@ public class ControllerInteraction : MonoBehaviour
 					// Shows button click animation
 					// Hides scramble and solve text, and hides timer
 					case 1:
-						hypercubeTurner.SetStartState();
+						if (usingHypercubeTurner)
+						{
+							hypercubeTurner.SetStartState();
+						}
+						else
+						{
+							cubeTurner.SetStartState();
+						}
 						buttons[0].HighlightButton();
 						cubeTimer.HideTimer();
 						scrambleText.HideText();
@@ -214,7 +241,14 @@ public class ControllerInteraction : MonoBehaviour
 					// Shows button click animation
 					// Cube moved variable resets
 					case 2:
-						scrambleText.SetText(hypercubeTurner.Scramble());
+						if (usingHypercubeTurner)
+						{
+							scrambleText.SetText(hypercubeTurner.Scramble());
+						}
+						else
+						{
+							scrambleText.SetText(cubeTurner.Scramble());
+						}
 						scrambleText.HideText();
 						buttons[1].HighlightButton();
 						cubeTimer.StartTimer();
@@ -228,9 +262,25 @@ public class ControllerInteraction : MonoBehaviour
 					// Toggles show color variable
 					// Changes blind mode variable and button text
 					case 3:
-						hypercubeTurner.ToggleColorShow();
+						if (usingHypercubeTurner)
+						{
+							hypercubeTurner.ToggleColorShow();
+						}
+						else
+						{
+							cubeTurner.ToggleColorShow();
+						}
 						buttons[2].HighlightButton();
-						if (hypercubeTurner.showingColors)
+						bool showingColors;
+						if (usingHypercubeTurner)
+						{
+							showingColors = hypercubeTurner.showingColors;
+						}
+						else
+						{
+							showingColors = cubeTurner.showingColors;
+						}
+						if (showingColors)
 						{
 							cubeTimer.DisableBlindMode();
 						}
@@ -243,8 +293,37 @@ public class ControllerInteraction : MonoBehaviour
 					// Toggle show turns button clicked
 					// Toggles show turns variable
 					case 4:
-						hypercubeTurner.ToggleShowTurn();
+						if (usingHypercubeTurner)
+						{
+							hypercubeTurner.ToggleShowTurn();
+						}
+						else
+						{
+							cubeTurner.ToggleShowTurn();
+						}
 						buttons[3].HighlightButton();
+						break;
+
+					// Switch from 3D to 4D cube scene
+					case 5:
+						System.Threading.Thread.Sleep(100);
+						MultiSceneManager.SwitchCubeScene();
+						break;
+
+					// Switch to credits scene
+					case 6:
+						MultiSceneManager.CreditsScene();
+						break;
+
+					// Switch back from credits scene
+					case 7:
+						MultiSceneManager.BackFromCredits();
+						break;
+
+					// Switch from 4D to 3D cube scene
+					case 8:
+						System.Threading.Thread.Sleep(100);
+						MultiSceneManager.SwitchCubeScene();
 						break;
 				}
 			}
@@ -279,7 +358,14 @@ public class ControllerInteraction : MonoBehaviour
 			// Controller aimed at sticker if value is above 0
 			if (stickerClicked > 0)
 			{
-				hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.Clockwise);
+				if (usingHypercubeTurner)
+				{
+					hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.Clockwise);
+				}
+				else
+				{
+					cubeTurner.Turn(stickerClicked, CubeTurner.TurnType.Clockwise);
+				}
 				cubeMoved = true;
 			}
 		}
@@ -313,7 +399,14 @@ public class ControllerInteraction : MonoBehaviour
 			// Controller aimed at sticker if value is above 0
 			if (stickerClicked > 0)
 			{
-				hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.CounterClockwise);
+				if (usingHypercubeTurner)
+				{
+					hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.CounterClockwise);
+				}
+				else
+				{
+					cubeTurner.Turn(stickerClicked, CubeTurner.TurnType.CounterClockwise);
+				}
 				cubeMoved = true;
 			}
 		}
@@ -347,7 +440,14 @@ public class ControllerInteraction : MonoBehaviour
 			// Controller aimed at sticker if value is above 0
 			if (stickerClicked > 0)
 			{
-				hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.HalfTurn);
+				if (usingHypercubeTurner)
+				{
+					hypercubeTurner.Turn(stickerClicked, HypercubeTurner.TurnType.HalfTurn);
+				}
+				else
+				{
+					cubeTurner.Turn(stickerClicked, CubeTurner.TurnType.HalfTurn);
+				}
 				cubeMoved = true;
 			}
 		}
@@ -368,7 +468,14 @@ public class ControllerInteraction : MonoBehaviour
 		{
 			if (!stickReset)
 			{
-				hypercubeTurner.ChangePerspective(HypercubeTurner.Perspective.Normal);
+				if (usingHypercubeTurner)
+				{
+					hypercubeTurner.ChangePerspective(HypercubeTurner.Perspective.Normal);
+				}
+				else
+				{
+					cubeTurner.ChangePerspective(CubeTurner.Perspective.Normal);
+				}
 			}
 			stickReset = true;
 		}
@@ -378,7 +485,14 @@ public class ControllerInteraction : MonoBehaviour
 		if (stickValue.y > 0.5f && stickReset)
 		{
 			stickReset = false;
-			hypercubeTurner.ChangePerspective(HypercubeTurner.Perspective.Top);
+			if (usingHypercubeTurner)
+			{
+				hypercubeTurner.ChangePerspective(HypercubeTurner.Perspective.Top);
+			}
+			else
+			{
+				cubeTurner.ChangePerspective(CubeTurner.Perspective.Top);
+			}
 		}
 
 		// If the stick button is within the 50% moved down threshold, the stick button
@@ -386,7 +500,14 @@ public class ControllerInteraction : MonoBehaviour
 		else if (stickValue.y < -0.5f && stickReset)
 		{
 			stickReset = false;
-			hypercubeTurner.ChangePerspective(HypercubeTurner.Perspective.Bottom);
+			if (usingHypercubeTurner)
+			{
+				hypercubeTurner.ChangePerspective(HypercubeTurner.Perspective.Bottom);
+			}
+			else
+			{
+				cubeTurner.ChangePerspective(CubeTurner.Perspective.Bottom);
+			}
 		}
 	}
 
@@ -419,14 +540,25 @@ public class ControllerInteraction : MonoBehaviour
 			gripReset = false;
 
 			// Main section and outside section transforms are initialized
-			if (mainSectionTransform == null)
+			if (usingHypercubeTurner)
 			{
-				mainSectionTransform = hypercubeTurner.gameObject.transform.Find("MainSection");
+				if (mainSectionTransform == null)
+				{
+					mainSectionTransform = hypercubeTurner.gameObject.transform.Find("MainSection");
+				}
+				if (outsideSectionTransform == null)
+				{
+					outsideSectionTransform = hypercubeTurner.gameObject.transform.Find("OutsideCube");
+				}
 			}
-			if (outsideSectionTransform == null)
+			else
 			{
-				outsideSectionTransform = hypercubeTurner.gameObject.transform.Find("OutsideCube");
+				if (mainSectionTransform == null)
+				{
+					mainSectionTransform = cubeTurner.gameObject.transform.Find("MainSection");
+				}
 			}
+
 
 			// The controller x start position is initialized to the current controller
 			// position in space
@@ -452,8 +584,11 @@ public class ControllerInteraction : MonoBehaviour
 			// Main section is rotated and outside section is rotated in the
 			// opposite direction
 			mainSectionTransform.localRotation = sectionRotation;
-			sectionRotation.eulerAngles = -sectionRotation.eulerAngles;
-			outsideSectionTransform.localRotation = sectionRotation;
+			if (usingHypercubeTurner)
+			{
+				sectionRotation.eulerAngles = -sectionRotation.eulerAngles;
+				outsideSectionTransform.localRotation = sectionRotation;
+			}
 		}
 	}
 

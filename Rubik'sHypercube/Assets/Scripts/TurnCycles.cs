@@ -884,6 +884,105 @@ public static class TurnCycles
 	};
 
 	/// <summary>
+	/// The clockwise 90 degree rotation cycles for the cube
+	/// </summary>
+	private static List<int[,]> cubeClockwise = new List<int[,]>()
+	{
+		// Front turn clockwise
+		new int[,] {{1, 7, 9, 3}, {2, 4, 8, 6}, {19, 43, 30, 46}, {20, 40, 29, 49}, {21, 37, 28, 52}},
+
+		// Back turn clockwise
+		new int[,] {{10, 12, 18, 16}, {11, 15, 17, 13}, {25, 48, 36, 45}, {26, 51, 35, 42}, {27, 54, 34, 39}},
+
+		// Top turn clockwise
+		new int[,] {{7, 54, 18, 43}, {8, 53, 17, 44}, {9, 52, 16, 45}, {19, 25, 27, 21}, {20, 22, 26, 24}},
+
+		// Bottom turn clockwise
+		new int[,] {{1, 37, 12, 48}, {2, 38, 11, 47}, {3, 39, 10, 46}, {28, 30, 36, 34}, {29, 33, 35, 31}},
+
+		// Right turn clockwise
+		new int[,] {{3, 21, 18, 36}, {6, 24, 15, 33}, {9, 27, 12, 30}, {37, 43, 45, 39}, {38, 40, 44, 42}},
+
+		// Left turn clockwise
+		new int[,] {{1, 34, 16, 19}, {4, 31, 13, 22}, {7, 28, 10, 25}, {46, 48, 54, 52}, {47, 51, 53, 49}}
+	};
+
+	/// <summary>
+	/// The 180 degree half turn rotation cycles for the cube
+	/// </summary>
+	private static List<int[,]> cubeHalfTurn = new List<int[,]>()
+	{
+
+		// Front half turn
+		new int[,] {{1, 9}, {2, 8}, {3, 7}, {4, 6}, {19, 30}, {20, 29}, {21, 28}, {37, 52}, {40, 49}, {43, 46}},
+		
+		// Back half turn
+		new int[,] {{10, 18}, {11, 17}, {12, 16}, {13, 15}, {25, 36}, {26, 35}, {27, 34}, {39, 54}, {42, 51}, {45, 48}},
+		
+		// Top half turn
+		new int[,] {{7, 18}, {8, 17}, {9, 16}, {19, 27}, {20, 26}, {21, 25}, {22, 24}, {43, 54}, {44, 53}, {45, 52}},
+		
+		// Bottom half turn
+		new int[,] {{1, 12}, {2, 11}, {3, 10}, {28, 36}, {29, 35}, {30, 34}, {31, 33}, {37, 48}, {38, 47}, {39, 46}},
+		
+		// Right half turn
+		new int[,] {{3, 18}, {6, 15}, {9, 12}, {21, 36}, {24, 33}, {27, 30}, {37, 45}, {38, 44}, {39, 43}, {40, 42}},
+		
+		// Left half turn
+		new int[,] {{1, 16}, {4, 13}, {7, 10}, {19, 34}, {22, 31}, {25, 28}, {46, 54}, {47, 53}, {48, 52}, {49, 51}}
+	};
+
+	/// <summary>
+	/// The counter-clockwise 90 degree rotation cycles for the cube
+	/// </summary>
+	private static List<int[,]> cubeCounterclockwise = new List<int[,]>()
+	{
+
+		// Front counter-clockwise turn
+		new int[,] {{1, 3, 9, 7}, {2, 6, 8, 4}, {19, 46, 30, 43}, {20, 49, 29, 40}, {21, 52, 28, 37}},
+		
+		// Back counter-clockwise turn
+		new int[,] {{10, 16, 18, 12}, {11, 13, 17, 15}, {25, 45, 36, 48}, {26, 42, 35, 51}, {27, 39, 34, 54}},
+		
+		// Top counter-clockwise turn
+		new int[,] {{7, 43, 18, 54}, {8, 44, 17, 53}, {9, 45, 16, 52}, {19, 21, 27, 25}, {20, 24, 26, 22}},
+		
+		// Bottom counter-clockwise turn
+		new int[,] {{1, 48, 12, 37}, {2, 47, 11, 38}, {3, 46, 10, 39}, {28, 34, 36, 30}, {29, 31, 35, 33}},
+		
+		// Right counter-clockwise turn
+		new int[,] {{3, 36, 18, 21}, {6, 33, 15, 24}, {9, 30, 12, 27}, {37, 39, 45, 43}, {38, 42, 44, 40}},
+		
+		// Left counter-clockwise turn
+		new int[,] {{1, 19, 16, 34}, {4, 22, 13, 31}, {7, 25, 10, 28}, {46, 52, 54, 48}, {47, 49, 53, 51}},
+	};
+
+	/// <summary>
+	/// The full cube rotation cycles that centraize a face to the top face
+	/// </summary>
+	private static List<int[,]> cubeCentralizerTurns = new List<int[,]>()
+	{
+
+		// Centralize front face to top face
+		new int[,] {{1, 19, 16, 34}, {2, 20, 17, 35}, {3, 21, 18, 36}, {4, 22, 13, 31}, {5, 23, 14, 32}, {6, 24, 15, 33}, {7, 25, 10, 28}, {8, 26, 11, 29}, {9, 27, 12, 30}, {37, 43, 45, 39}, {38, 40, 44, 42}, {46, 52, 54, 48}, {47, 49, 53, 51}},
+		
+		// Centralize back face to top face
+		new int[,] {{1, 34, 16, 19}, {2, 35, 17, 20}, {3, 36, 18, 21}, {4, 31, 13, 22}, {5, 32, 14, 23}, {6, 33, 15, 24}, {7, 28, 10, 25}, {8, 29, 11, 26}, {9, 30, 12, 27}, {37, 39, 45, 43}, {38, 42, 44, 40}, {46, 48, 54, 52}, {47, 51, 53, 49}},
+		
+		// Centralize top face to top face
+		new int[,] { { } },
+		
+		// Centralize bottom face to top face
+		new int[,] {{1, 16}, {2, 17}, {3, 18}, {4, 13}, {5, 14}, {6, 15}, {7, 10}, {8, 11}, {9, 12}, {19, 34}, {20, 35}, {21, 36}, {22, 31}, {23, 32}, {24, 33}, {25, 28}, {26, 29}, {27, 30}, {37, 45}, {38, 44}, {39, 43}, {40, 42}, {46, 54}, {47, 53}, {48, 52}, {49, 51}},
+		
+		// Centralize right face to top face
+		new int[,] {{1, 3, 9, 7}, {2, 6, 8, 4}, {10, 12, 18, 16}, {11, 15, 17, 13}, {19, 46, 30, 43}, {20, 49, 29, 40}, {21, 52, 28, 37}, {22, 47, 33, 44}, {23, 50, 32, 41}, {24, 53, 31, 38}, {25, 48, 36, 45}, {26, 51, 35, 42}, {27, 54, 34, 39}},
+		
+		// Centralize left face to top face
+		new int[,] {{1, 7, 9, 3}, {2, 4, 8, 6}, {10, 16, 18, 12}, {11, 13, 17, 15}, {19, 43, 30, 46}, {20, 40, 29, 49}, {21, 37, 28, 52}, {22, 44, 33, 47}, {23, 41, 32, 50}, {24, 38, 31, 53}, {25, 45, 36, 48}, {26, 42, 35, 51}, {27, 39, 34, 54}},
+	};
+
+	/// <summary>
 	/// This gets the cycle notation of the given turn
 	/// </summary>
 	/// <param name="stickerIndex">
@@ -956,6 +1055,35 @@ public static class TurnCycles
 			cornerPieceIndecies.Contains(relativeBasePiece))
 		{
 			return cornerTurns240[8 * ((stickerIndex - 1) / 27) + cornerPieceIndecies.IndexOf(relativeBasePiece)];
+		}
+
+		// Return identity in incorrect input
+		return new int[,] { { } };
+	}
+
+	/// <summary>
+	/// This gets the cycle notation of the given turn
+	/// </summary>
+	/// <param name="stickerIndex">
+	/// Sticker index to turn around
+	/// </param>
+	/// <param name="turnType">Degree type of turn</param>
+	/// <returns>Array of cycles of sticker indexes</returns>
+	public static int[,] GetCycles(int stickerIndex, CubeTurner.TurnType turnType)
+	{
+
+		// Index of the face from the sticker
+		int faceIndex = (stickerIndex - 1) / 9;
+		switch (turnType)
+		{
+			case CubeTurner.TurnType.Clockwise:
+				return cubeClockwise[faceIndex];
+			case CubeTurner.TurnType.HalfTurn:
+				return cubeHalfTurn[faceIndex];
+			case CubeTurner.TurnType.CounterClockwise:
+				return cubeCounterclockwise[faceIndex];
+			case CubeTurner.TurnType.FaceCentralizer:
+				return cubeCentralizerTurns[faceIndex];
 		}
 
 		// Return identity in incorrect input
