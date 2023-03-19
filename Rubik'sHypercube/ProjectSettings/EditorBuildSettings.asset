@@ -4,7 +4,19 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MabzLogo.unity
+    guid: f9ded92b4b37643fd89c0a4a012ac46e
+  - enabled: 1
+    path: Assets/Scenes/CubeScene.unity
+    guid: 6855af1420a01445d8002bcd0dd7f4b7
+  - enabled: 1
+    path: Assets/Scenes/HypercubeScene.unity
+    guid: 9936977e1250448cf88e05f29abaadfc
+  - enabled: 1
+    path: Assets/Scenes/Credits.unity
+    guid: 42fe22bad33bf43ba890f5228ae69a89
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260,
       type: 2}
