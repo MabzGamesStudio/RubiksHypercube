@@ -1,5 +1,5 @@
 # RubiksHypercube
-A virtual reality game where you can solve a Rubik's 3x3x3 cube and 3x3x3x3 hypercube.
+A virtual reality game where you can solve a Rubik's 3x3x3 cube and 3x3x3x3 hypercube. Play for free [here](https://mabz.itch.io/rubiks-cube-and-hypercube)!
 
 <p align="center">
 <img src="RubiksCubeAndHypercubeThumbnail.PNG" width="50%" class="center"/>
